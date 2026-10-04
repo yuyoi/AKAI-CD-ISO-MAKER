@@ -1,5 +1,7 @@
 # Akai CD ISO Maker
 
+> **UNTESTED ON REAL HARDWARE.** Discs written by this tool have not yet been loaded on a real Akai sampler. Reading real CDs is tested; writing is not. Use at your own risk and please report results (issue template: Hardware test report). This banner is removed once a disc is confirmed working.
+
 Made by JunkSmithWizard (JSW) together with Claude (Anthropic's AI). Claude wrote the code and did the format analysis
 (partition header and checksum, FAT, directory, sample / program layouts). JSW supplied the idea, the test discs and the
 samplers. **Hardware testing of written discs is still to do** (see Status).
