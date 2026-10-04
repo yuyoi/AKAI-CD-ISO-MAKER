@@ -55,7 +55,7 @@ def effective_playback(zone, smp):
 def export_sfz(vm, program, outdir, samples_dir='samples'):
     """write <program>.sfz and the WAVs it uses (shared samples folder). -> sfz path"""
     os.makedirs(os.path.join(outdir, samples_dir), exist_ok=True)
-    lines = ['// %s  (exported by Akai Sampler CD Tool)' % program.name, '<control>',
+    lines = ['// %s  (exported by Akai CD ISO Maker)' % program.name, '<control>',
              'default_path=%s/' % samples_dir, '']
     done = set()
     for kg in program.keygroups:
@@ -196,7 +196,7 @@ def sf2_bytes(vm, programs, title='AKAI EXPORT'):
 
     info = _list(b'INFO', _chunk(b'ifil', struct.pack('<HH', 2, 1)), _chunk(b'isng', b'EMU8000\x00'),
                  _chunk(b'INAM', title.encode('ascii', 'replace')[:60] + b'\x00'),
-                 _chunk(b'ISFT', b'Akai Sampler CD Tool\x00'))
+                 _chunk(b'ISFT', b'Akai CD ISO Maker\x00'))
     sdta = _list(b'sdta', _chunk(b'smpl', bytes(smpl)))
     pdta = _list(b'pdta', _chunk(b'phdr', bytes(phdr)), _chunk(b'pbag', bytes(pbag)), _chunk(b'pmod', pmod),
                  _chunk(b'pgen', bytes(pgen)), _chunk(b'inst', bytes(inst)), _chunk(b'ibag', bytes(ibag)),

@@ -1,4 +1,4 @@
-# Akai Sampler CD Tool
+# Akai CD ISO Maker
 
 Made by JunkSmithWizard (JSW) together with Claude (Anthropic's AI). Claude wrote the code and did the format analysis
 (partition header and checksum, FAT, directory, sample / program layouts). JSW supplied the idea, the test discs and the

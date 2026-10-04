@@ -13,7 +13,7 @@ from .akai import Keygroup, Loop, Program, VolumeModel, Zone
 CD_MB = {'74 min (650 MB)': 650, '80 min (700 MB)': 700}
 PLAYBACK = ['As sample', 'Loop in release', 'Loop until release', 'No loop', 'Play to end']
 LOOPMODES = ['Loop in release', 'Loop until release', 'No loop', 'Play to end']
-TITLE = 'Akai Sampler CD Tool'
+TITLE = 'Akai CD ISO Maker'
 
 
 class App(tk.Tk):
@@ -230,7 +230,7 @@ class App(tk.Tk):
             ttk.Label(self.panel, text=self.intro(), padding=20, justify='left').pack(anchor='nw')
 
     def intro(self):
-        return ('Akai Sampler CD Tool\n\n'
+        return ('Akai CD ISO Maker\n\n'
                 '1. Add audio (wav, mp3, flac, ogg, aiff ...). Root notes come from the file name (e.g. Piano_C3),\n'
                 '    the WAV smpl chunk, or are detected from the sound.\n'
                 '2. Auto-map the samples into programs (multisample keyboard, drum kit, or one program each).\n'
