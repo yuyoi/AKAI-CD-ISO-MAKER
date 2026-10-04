@@ -4,3 +4,5 @@ __pycache__/
 *.akproj
 dist/
 build/
+.buildenv/
+*.spec
