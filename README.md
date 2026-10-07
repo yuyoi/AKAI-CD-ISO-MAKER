@@ -30,6 +30,25 @@ python -m akaitool export "Some Akai CD.iso" out_folder -f sfz     # or wav / sf
 
 `ffmpeg` on PATH is used for formats libsndfile cannot decode.
 
+## macOS
+
+**Download:** the release page has `AkaiCDISOMaker-macos-arm64.zip` (Apple Silicon) and `AkaiCDISOMaker-macos-intel.zip`,
+built automatically by GitHub Actions. The app is **not signed or notarised**, so the first time: right-click the app, choose
+Open, then Open again. If macOS says it is damaged: `xattr -dr com.apple.quarantine AkaiCDISOMaker.app`.
+
+**From source:**
+```
+brew install python-tk ffmpeg
+pip3 install -r requirements.txt
+python3 -m akaitool          # or double-click run.command
+```
+Notes: Cmd replaces Ctrl in the shortcuts; right-click in the waveform is two-finger or ctrl click. Do not use the Tk bundled with
+Apple's system Python (old and glitchy), use python.org or Homebrew Python.
+
+**Burning on a Mac:** the image is not an ISO 9660 disc, so Disk Utility often refuses it. Use a burner that writes a raw image
+(for example Burn, or `hdiutil burn -noverify image.iso`, or `drutil`) and check it is written as a data CD, mode 1.
+macOS support is **untested on a real Mac** at the moment, please report problems.
+
 ## Burning
 
 The image is a raw Akai disc (no ISO 9660), just like a ripped commercial sample CD. Burn it as an **image**, data CD,

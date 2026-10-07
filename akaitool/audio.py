@@ -6,11 +6,17 @@ import re
 import shutil
 import struct
 import subprocess
+import sys
 import tempfile
 
 import numpy as np
 
 from .akai import LM_LOOP_HOLD, LM_NOLOOP, Loop, Sample, clean_name
+
+if sys.platform == 'darwin':          # apps started from Finder do not see Homebrew's ffmpeg
+    for _d in ('/opt/homebrew/bin', '/usr/local/bin'):
+        if os.path.isdir(_d) and _d not in os.environ.get('PATH', ''):
+            os.environ['PATH'] = os.environ.get('PATH', '') + os.pathsep + _d
 
 AUDIO_EXT = ('.wav', '.mp3', '.flac', '.ogg', '.oga', '.aif', '.aiff', '.aifc', '.m4a', '.aac', '.wma', '.opus')
 NOTE_NAMES = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']

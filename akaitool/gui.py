@@ -1,6 +1,7 @@
 """Tk desktop GUI: build, edit, audition and export Akai S1000/S2000/S3000 sampler CDs."""
 import os
 import queue
+import sys
 import threading
 import tkinter as tk
 from tkinter import filedialog, messagebox, simpledialog, ttk
@@ -14,6 +15,9 @@ CD_MB = {'74 min (650 MB)': 650, '80 min (700 MB)': 700}
 PLAYBACK = ['As sample', 'Loop in release', 'Loop until release', 'No loop', 'Play to end']
 LOOPMODES = ['Loop in release', 'Loop until release', 'No loop', 'Play to end']
 TITLE = 'Akai CD ISO Maker'
+MAC = sys.platform == 'darwin'
+MOD, MODNAME = ('Command', 'Cmd') if MAC else ('Control', 'Ctrl')
+RIGHT_CLICKS = ('<Button-2>', '<Control-Button-1>') if MAC else ('<Button-3>',)   # macOS: right click is Button-2
 
 
 class App(tk.Tk):
@@ -38,24 +42,24 @@ class App(tk.Tk):
     def _build_menu(self):
         m = tk.Menu(self)
         f = tk.Menu(m, tearoff=0)
-        f.add_command(label='New disc', command=self.new_disc, accelerator='Ctrl+N')
+        f.add_command(label='New disc', command=self.new_disc, accelerator='%s+N' % MODNAME)
         f.add_command(label='Open project...', command=self.open_project)
-        f.add_command(label='Save project', command=self.save_project, accelerator='Ctrl+S')
+        f.add_command(label='Save project', command=self.save_project, accelerator='%s+S' % MODNAME)
         f.add_command(label='Save project as...', command=lambda: self.save_project(True))
         f.add_separator()
         f.add_command(label='Open Akai CD / disk image to edit...', command=self.open_image)
         f.add_separator()
-        f.add_command(label='Build Akai disc image...', command=self.build_image, accelerator='Ctrl+B')
+        f.add_command(label='Build Akai disc image...', command=self.build_image, accelerator='%s+B' % MODNAME)
         f.add_separator()
         f.add_command(label='Exit', command=self.on_close)
         m.add_cascade(label='File', menu=f)
         a = tk.Menu(m, tearoff=0)
-        a.add_command(label='Add audio files...', command=self.add_audio, accelerator='Ctrl+O')
+        a.add_command(label='Add audio files...', command=self.add_audio, accelerator='%s+O' % MODNAME)
         a.add_command(label='Add folder of audio...', command=self.add_folder)
         a.add_separator()
         a.add_command(label='New volume', command=self.new_volume)
         a.add_command(label='Rename...', command=self.rename)
-        a.add_command(label='Delete selected', command=self.delete_selected, accelerator='Del')
+        a.add_command(label='Delete selected', command=self.delete_selected, accelerator='Del' if not MAC else 'Backspace')
         m.add_cascade(label='Edit', menu=a)
         e = tk.Menu(m, tearoff=0)
         e.add_command(label='Selected sample(s) to WAV...', command=lambda: self.export_selection('wav'))
@@ -67,10 +71,10 @@ class App(tk.Tk):
         h.add_command(label='About', command=self.about)
         m.add_cascade(label='Help', menu=h)
         self.config(menu=m)
-        self.bind('<Control-n>', lambda _e: self.new_disc())
-        self.bind('<Control-s>', lambda _e: self.save_project())
-        self.bind('<Control-o>', lambda _e: self.add_audio())
-        self.bind('<Control-b>', lambda _e: self.build_image())
+        self.bind('<%s-n>' % MOD, lambda _e: self.new_disc())
+        self.bind('<%s-s>' % MOD, lambda _e: self.save_project())
+        self.bind('<%s-o>' % MOD, lambda _e: self.add_audio())
+        self.bind('<%s-b>' % MOD, lambda _e: self.build_image())
 
     def _build_ui(self):
         tb = ttk.Frame(self, padding=(6, 4))
@@ -93,6 +97,7 @@ class App(tk.Tk):
         sb.pack(side='left', fill='y')
         self.tree.bind('<<TreeviewSelect>>', self.on_select)
         self.tree.bind('<Delete>', lambda _e: self.delete_selected())
+        self.tree.bind('<BackSpace>', lambda _e: self.delete_selected())
         self.tree.bind('<Double-1>', lambda _e: self.rename())
         self.right = ttk.Frame(pw)
         pw.add(self.right, weight=3)
@@ -285,14 +290,15 @@ class App(tk.Tk):
         ttk.Button(bar, text='Stop', command=self.stop_play).pack(side='left', padx=2)
         ttk.Button(bar, text='Normalize', command=self.normalize).pack(side='left', padx=(14, 2))
         ttk.Button(bar, text='Trim silence', command=self.trim).pack(side='left', padx=2)
-        info = '%d samples, %.1f kB, plays at %.0f Hz equivalent.   Left click = loop start, right click = loop end.' % (
+        info = '%d samples, %.1f kB, plays at %.0f Hz equivalent.   Left click = loop start, right click (two-finger / ctrl click on a Mac) = loop end.' % (
             s.n, s.n * 2 / 1024.0, s.play_rate)
         ttk.Label(p, text=info, padding=(8, 4)).pack(anchor='w')
         self.wave = tk.Canvas(p, bg='#101820', height=300, highlightthickness=0)
         self.wave.pack(fill='both', expand=True, padx=6, pady=4)
         self.wave.bind('<Configure>', lambda _e: self.draw_wave())
         self.wave.bind('<Button-1>', lambda e: self.wave_click(e, 0))
-        self.wave.bind('<Button-3>', lambda e: self.wave_click(e, 1))
+        for seq in RIGHT_CLICKS:
+            self.wave.bind(seq, lambda e: self.wave_click(e, 1))
         self.root_trace = self.v_root.trace_add('write', lambda *_: self._root_changed())
 
     def _root_changed(self):
