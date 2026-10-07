@@ -49,6 +49,21 @@ Apple's system Python (old and glitchy), use python.org or Homebrew Python.
 (for example Burn, or `hdiutil burn -noverify image.iso`, or `drutil`) and check it is written as a data CD, mode 1.
 macOS support is **untested on a real Mac** at the moment, please report problems.
 
+## Linux
+
+**Download:** `AkaiCDISOMaker-linux-x86_64.tar.gz` from the release page (built on Ubuntu 22.04; needs a desktop with X11 or Wayland).
+`tar xzf` it and run `./AkaiCDISOMaker`. If playback is silent install PortAudio (`sudo apt install libportaudio2`).
+
+**From source:**
+```
+sudo apt install python3-tk ffmpeg libportaudio2      # Fedora: python3-tkinter ffmpeg portaudio
+pip install -r requirements.txt
+python3 -m akaitool          # or ./run.command
+```
+**Burning is easy here:** `cdrecord -dao -data dev=/dev/sr0 image.iso` (or `wodim`), or in K3b / Brasero use "burn image" with
+the raw mode-1 data option. You can also test an image without a disc: `python3 -m akaitool info image.iso -p`.
+Linux is **untested on a real machine** at the moment, please report problems.
+
 ## Burning
 
 The image is a raw Akai disc (no ISO 9660), just like a ripped commercial sample CD. Burn it as an **image**, data CD,

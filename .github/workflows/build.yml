@@ -19,6 +19,8 @@ jobs:
         include:
           - os: windows-latest
             label: windows
+          - os: ubuntu-22.04        # old glibc so the binary runs on most distros
+            label: linux
           - os: macos-latest        # Apple Silicon
             label: macos-arm64
           - os: macos-15-intel      # Intel Macs
@@ -29,6 +31,9 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
+      - name: System libraries (Linux)
+        if: matrix.label == 'linux'
+        run: sudo apt-get update && sudo apt-get install -y libportaudio2 libsndfile1
       - name: Install
         run: python -m pip install numpy scipy soundfile sounddevice pyinstaller
       - name: Tests (disc round-trip is skipped here: no Akai discs in CI)
@@ -42,6 +47,11 @@ jobs:
           --collect-binaries soundfile --collect-binaries sounddevice
           --exclude-module matplotlib --exclude-module pandas --exclude-module IPython --exclude-module pytest
           akai_cd_iso_maker.py
+      - name: Build (Linux binary)
+        if: matrix.label == 'linux'
+        run: |
+          pyinstaller --noconfirm --onefile --windowed --name AkaiCDISOMaker             --collect-binaries soundfile --collect-binaries sounddevice             --exclude-module matplotlib --exclude-module pandas --exclude-module IPython --exclude-module pytest             akai_cd_iso_maker.py
+          tar -C dist -czf AkaiCDISOMaker-linux-x86_64.tar.gz AkaiCDISOMaker
       - name: Build (macOS app)
         if: startsWith(matrix.label, 'macos')
         run: |
@@ -60,7 +70,8 @@ jobs:
           path: |
             AkaiCDISOMaker-windows.exe
             AkaiCDISOMaker-${{ matrix.label }}.zip
-          if-no-files-found: error
+            AkaiCDISOMaker-linux-x86_64.tar.gz
+          if-no-files-found: ignore
       - name: Attach to the release
         if: github.event_name == 'release'
         shell: bash
